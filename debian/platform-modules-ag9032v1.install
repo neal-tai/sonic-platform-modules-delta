@@ -1,0 +1,4 @@
+ag9032v1/scripts/ag9032v1_platform_init.sh usr/local/bin
+ag9032v1/scripts/led_control usr/local/bin
+ag9032v1/scripts/set-qsfp.sh usr/local/bin
+ag9032v1/cfg/ag9032v1-modules.conf etc/modules-load.d

@@ -1,0 +1,163 @@
+#!/bin/bash
+
+function set_led(){
+	case ${1} in
+          "1")
+              set_FAN_color ${2};
+	      ;;
+          "2")
+	      set_PWR1_color ${2};
+              ;;
+          "3")
+              set_PWR2_color ${2};
+              ;;
+          "4")
+              set_SYS_color ${2};
+              ;;
+
+          *)
+              echo -e "Usage ${0} set led {1}-{4} {COLOR} \n {1} - FAN  LED \n {2} - PWR1 LED \n {3} - PWR2 LED \n {4} - SYS  LED"
+	      ;;
+         esac
+
+}
+function set_FAN_color(){
+	case ${1} in
+          "GREEN")
+              echo "Set FAN led to be "GREEN""
+              echo "0x1C" > /sys/bus/i2c/devices/6-0031/addr
+              value=$(</sys/bus/i2c/devices/6-0031/data)
+              value_clean=$(($value & ~0x03))
+              value_set=$(($value_clean | 0x01))
+              printf -v data "%x" "$value_set"
+              echo "$data" > /sys/bus/i2c/devices/6-0031/data
+              ;;
+          "AMBER")
+              echo "Set FAN led to be AMBER"
+              echo "0x1C" > /sys/bus/i2c/devices/6-0031/addr
+              value=$(</sys/bus/i2c/devices/6-0031/data)
+              value_clean=$(($value & ~0x03))
+              value_set=$(($value_clean | 0x02))
+              printf -v data "%x" "$value_set"
+              echo $data > /sys/bus/i2c/devices/6-0031/data
+              ;;
+          "")
+	      echo "Need to insert the FAN led color in {AMBER | GREEN}"
+              ;;
+          *)
+	      echo "Need to insert the FAN led color in {AMBER | GREEN}"
+              ;;
+         esac
+}
+
+function set_PWR1_color(){
+        case ${1} in
+          "GREEN")
+              echo "Set the PWR1 led to be green"
+              echo "0x1C" > /sys/bus/i2c/devices/6-0031/addr
+              value=$(</sys/bus/i2c/devices/6-0031/data)
+              value_clean=$(($value & ~0xC0))
+              value_set=$(($value_clean | 0x40))
+              printf -v data "%x" "$value_set"
+              echo "$data" > /sys/bus/i2c/devices/6-0031/data
+              ;;
+          "BLINKING_AMBER")
+	      echo "Set the PWR1 led to be blinking amber"
+              echo "0x1C" > /sys/bus/i2c/devices/6-0031/addr
+              value=$(</sys/bus/i2c/devices/6-0031/data)
+              value_clean=$(($value & ~0xC0))
+              value_set=$(($value_clean | 0x80))
+              printf -v data "%x" "$value_set"
+              echo "$data" > /sys/bus/i2c/devices/6-0031/data
+              ;;
+          *)
+	      echo "Need to insert PWR1 light color in {GREEN | BLINKING_AMBER}"
+              ;;
+         esac
+}
+function set_PWR2_color(){
+        case ${1} in
+          "GREEN")
+              echo "Set the PWR2 led of to be green"
+              echo "0x1C" > /sys/bus/i2c/devices/6-0031/addr
+              value=$(</sys/bus/i2c/devices/6-0031/data)
+              value_clean=$(($value & ~0x30))
+              value_set=$(($value_clean | 0x10))
+              printf -v data "%x" "$value_set"
+              echo $data > /sys/bus/i2c/devices/6-0031/data
+              ;;
+          "BLINKING_AMBER")
+              echo "Set the PWR2 led to be blinking amber"
+              echo "0x1C" > /sys/bus/i2c/devices/6-0031/addr
+              value=$(</sys/bus/i2c/devices/6-0031/data)
+              value_clean=$(($value & ~0x30))
+              value_set=$(($value_clean | 0x20))
+              printf -v data "%x" "$value_set"
+              echo $data > /sys/bus/i2c/devices/6-0031/data
+              ;;
+          *)
+              echo "Need to insert PWR1 light color in {GREEN | BLINKING_AMBER}"
+              ;;
+         esac
+}
+function set_SYS_color(){
+        case ${1} in
+          "GREEN")
+              echo "Set the SYS led to be green"
+              echo "0x1C" > /sys/bus/i2c/devices/6-0031/addr
+              value=$(</sys/bus/i2c/devices/6-0031/data)
+              value_clean=$(($value & ~0x0C))
+              value_set=$(($value_clean | 0x04))
+              printf -v data "%x" "$value_set"
+              echo "$data" > /sys/bus/i2c/devices/6-0031/data
+              ;;
+          "BLINKING_GREEN")
+              echo "Set the SYS led to be blinking green"
+              echo "0x1C" > /sys/bus/i2c/devices/6-0031/addr
+              value=$(</sys/bus/i2c/devices/6-0031/data)
+              value_clean=$(($value & ~0x0C))
+              value_set=$(($value_clean | 0x08))
+              printf -v data "%x" "$value_set"
+              echo "$data" > /sys/bus/i2c/devices/6-0031/data
+              ;;
+          "RED")
+              echo "Set the SYS led to be red"
+              echo "0x1C" > /sys/bus/i2c/devices/6-0031/addr
+              value=$(</sys/bus/i2c/devices/6-0031/data)
+              value_clean=$(($value & ~0x0C))
+              value_set=$(($value_clean | 0x0C))
+              printf -v data "%x" "$value_set"
+              echo "$data" > /sys/bus/i2c/devices/6-0031/data
+              ;;
+          *)
+              echo "Need to insert PWR1 light color in {GREEN | BLINKING_GREEN | RED }"
+              ;;
+         esac
+}
+
+
+case ${1} in
+  "set")
+        case ${2} in
+          "led")
+#              echo "led mode in ${3}"
+	      set_led ${3} ${4};
+	      ;;
+          *)
+              echo -e "Usage ${0} set led {1}-{4} {COLOR} \n {1} - FAN  LED \n {2} - PWR1 LED \n {3} - PWR2 LED \n {4} - SYS  LED"
+	      ;;
+	  "help")
+              echo -e "Usage ${0} set led {1}-{4} {COLOR} \n {1} - FAN  LED \n{2} - PWR1 LED \n {3} - PWR2 LED \n {4} - SYS  LED"
+         esac
+         ;;
+  "get")
+	echo "Get the led light"
+	;;
+  "")
+	echo "Enter parameters, ex> {${0} set/get}"
+	;;
+  *)  
+        echo -e "Usage ${0} set led {1}-{4} {COLOR} \n {1} - FAN  LED \n {{2} - PWR1 LED \n {3} - PWR2 LED \n {4} - SYS  LED"
+	;;
+esac
+
